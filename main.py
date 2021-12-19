@@ -3,15 +3,12 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 from tensorflow import keras
-from tensorflow.keras import layers
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Activation, BatchNormalization, AveragePooling2D
-from tensorflow.keras.optimizers import SGD, RMSprop, Adam
-import tensorflow_datasets as tfds  # pip install tensorflow-datasets
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+from tensorflow.keras.optimizers import Adam
 import tensorflow as tf
-import logging
 import numpy as np
-from PIL import Image
+
 
 
 
@@ -19,8 +16,8 @@ from PIL import Image
 
 def mnist_cnn_model():
    image_size = 28
-   num_channels = 1  # 1 for grayscale images
-   num_classes = 10  # Number of outputs
+   num_channels = 1
+   num_classes = 10
    model = Sequential()
    model.add(Conv2D(filters=32, kernel_size=(3,3), activation='relu',
             padding='same',
@@ -62,8 +59,6 @@ def mnist_cnn_train(model):
 
    val_labels_cat = keras.utils.to_categorical(test_labels, num_classes)
 
-   print("Training the network...")
-
 
    model.fit(train_data, train_labels_cat, epochs=8, batch_size=64,
         validation_data=(val_data, val_labels_cat))
@@ -85,7 +80,7 @@ def cnn_digits_predict(model, image_file):
 
 
 model = tf.keras.models.load_model('cnn_digits_28x28.h5')
-print(cnn_digits_predict(model, 'digit_0.png'))
+print(cnn_digits_predict(model, 'training/digit_1.png'))
 
 
 
