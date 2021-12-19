@@ -1,1 +1,2 @@
-# clinic_l6
+# python_kurs_work
+OCR
