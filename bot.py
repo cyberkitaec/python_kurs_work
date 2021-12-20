@@ -8,6 +8,7 @@ from neural import img_to_str
 import digit
 from digit import cnn_digits_predict
 import sqlite3 as sq
+import time
 con = sq.connect("log.db", check_same_thread=False)
 cur = con.cursor()
 cur.execute("""CREATE TABLE IF NOT EXISTS users (date TEXT, message TEXT)""")
@@ -40,8 +41,11 @@ def tel_bot(TOKEN):
                 bot.send_message(message.chat.id, "Фото добавлено")
                 result = img_to_str(model, src)
                 print(result)
+                t = time.localtime()
+                current_time = time.strftime("%H:%M:%S", t)
                 bot.send_message(message.chat.id, f"{result}")
-                cur.execute("INSERT INTO users(date, message) VALUES(date('now'), ?)", result[0])
+                cur.execute("INSERT INTO users(date, message) VALUES(?, ?)", (current_time, 'распознование текста'))
+                con.commit()
             except Exception as e:
                 cur.execute("INSERT INTO users(date, message) VALUES(date('now'), ?)", e)
 
@@ -50,23 +54,6 @@ def tel_bot(TOKEN):
     def command_digit(message):
         bot.send_message(message.chat.id, "Считывание цифр с фото")
 
-        @bot.message_handler(content_types=['photo'])
-        def handle_digit_photo(message):
-            try:
-
-                file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
-                downloaded_file = bot.download_file(file_info.file_path)
-
-                src = 'D:/pythonProject/neural_ocr/' + file_info.file_path;
-                with open(src, 'wb') as new_file:
-                    new_file.write(downloaded_file)
-                bot.send_message(message.chat.id, "Фото добавлено")
-                result = cnn_digits_predict(model_digit, src)
-                print(result)
-                bot.send_message(message.chat.id, f"{result}")
-                cur.execute("INSERT INTO users(date, message) VALUES(date('now'), ?)", result[0])
-            except Exception as e:
-                cur.execute("INSERT INTO users(date, message) VALUES(date('now'), ?)", e)
 
 
 if __name__ == "__main__":
